@@ -8,23 +8,25 @@
 
 #import "CXLTarBar.h"
 #import "CXLTarItermView.h"
+#import <YYCategories/UIView+YYAdd.h>
 
 @interface CXLTarBar()
+/**标题数组*/
+@property (nonatomic,strong) NSArray *titleArray;
+/**itermView数组*/
 @property (nonatomic,strong) NSMutableArray<CXLTarItermView *> *itermArray;
-/** 选中的iterm的索引 */
+/**选中的iterm的索引*/
 @property (nonatomic,assign) NSInteger selectIndex;
-/** 指示器View */
+/**指示器View*/
 @property (nonatomic,strong) UIView *lineView;
 @end
 
 @implementation CXLTarBar
 #pragma mark - Init Menthod
-- (instancetype)initWithFrame:(CGRect)frame dataSource:(id<CXLTarBarDataSource>)dataSource delegate:(id<CXLTarBarDelegate>)delegate{
-    self = [super init];
+- (instancetype)initWithFrame:(CGRect)frame titleArray:(NSArray *)array{
+    self = [super initWithFrame:frame];
     if (self) {
-        self.frame = frame;
-        self.tabDataSource = dataSource;
-        self.tabDelegate = delegate;
+        _titleArray = [array copy];
         [self p_setProperty];
         [self p_setTarItermView];
         [self p_setLineView];
@@ -55,10 +57,10 @@
     CGFloat totalMiddleMargin = 0;
     CGFloat offSet = 0;
     
-    totalMarginWidth = ([self.tabDataSource numberOfIterms] + 1) *_itermPadding;
-    totalMiddleMargin = ([self.tabDataSource numberOfIterms] - 1) *_itermPadding;
-    for (int i = 0; i < [self.tabDataSource numberOfIterms]; i++) {
-        CGFloat itermWidth = [self.tabDataSource widthForItermAtIndex:i];
+    totalMarginWidth = (_titleArray.count + 1) *_itermPadding;
+    totalMiddleMargin = (_titleArray.count - 1) *_itermPadding;
+    for (int i = 0; i < _titleArray.count; i++) {
+        CGFloat itermWidth = [self widthForIndex:i];
         tarBarContentWidth += itermWidth;
     }
     
@@ -70,15 +72,15 @@
     }
     
     //设置Iterm的属性
-    for (int i = 0; i < [self.tabDataSource numberOfIterms]; i++) {
-        CGFloat itermWidth = [self.tabDataSource widthForItermAtIndex:i];
+    for (int i = 0; i < _titleArray.count; i++) {
+        CGFloat itermWidth = [self widthForIndex:i];
         CXLTarItermView *iterm = [[CXLTarItermView alloc]init];
         iterm.frame = CGRectMake(offSet, 0, itermWidth, CGRectGetHeight(self.bounds));
         offSet += itermWidth + _itermPadding;
         
         iterm.titleLabel.textColor = _selectIndex == i ? _selectColor : _normalColor;
         iterm.titleLabel.font = _selectIndex == i ? _selectFont : _normalFont;
-        iterm.titleLabel.text = [self.tabDataSource titleForItermAtIndex:i];
+        iterm.titleLabel.text = _titleArray[i];
         iterm.tag = i;
         [iterm addTarget:self action:@selector(clickedTabBar:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:iterm];
@@ -89,8 +91,11 @@
 }
 
 - (void)p_setLineView{
-    CGFloat width = [self.tabDataSource widthForItermAtIndex:_selectIndex];
+    CGFloat width = [self widthForIndex:_selectIndex];
+    CXLTarItermView *firstIterm = self.itermArray.firstObject;
     self.lineView.frame = CGRectMake(0, CGRectGetHeight(self.bounds) - 2, width, 2);
+    self.lineView.centerX = firstIterm.centerX;
+    self.lineView.backgroundColor = _selectColor;
     [self addSubview:self.lineView];
 }
 
@@ -120,12 +125,20 @@
     CXLTarItermView *itermView = self.itermArray[toIndex];
     if (animated) {
         [UIView animateWithDuration:0.3 animations:^{
+          self.lineView.width = [self widthForIndex:toIndex];
           self.lineView.center = CGPointMake(itermView.center.x, self.lineView.center.y);
         }];
     }else{
         CXLTarItermView *itermView = self.itermArray[toIndex];
+        self.lineView.width = [self widthForIndex:toIndex];
         self.lineView.center = CGPointMake(itermView.center.x, self.lineView.center.y);
     }
+}
+
+-(CGFloat)widthForIndex:(NSInteger)index{
+    NSString *text = _titleArray[index];
+    CGRect rect = [text boundingRectWithSize:CGSizeMake(20000, 40) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:_normalFont} context:nil];
+    return rect.size.width;
 }
 
 #pragma mark - Public Menthod
@@ -136,8 +149,8 @@
         return;
     }
     
-    CGFloat fromWidth = [self.tabDataSource widthForItermAtIndex:fromIndex];
-    CGFloat toWidth = [self.tabDataSource widthForItermAtIndex:fromIndex + 1];
+    CGFloat fromWidth = [self widthForIndex:fromIndex];
+    CGFloat toWidth = [self widthForIndex:fromIndex + 1];
     if (fromWidth != toWidth) {
         CGRect frame = self.lineView.frame;
         CGFloat lineWidth = fromWidth + (toWidth - fromWidth)*(contentRatio - fromIndex);
@@ -163,13 +176,8 @@
 - (void)clickedTabBar:(UIControl *)sender{
     NSInteger tag = sender.tag;
     if (_selectIndex == tag) return;
-    [self.tabDelegate didClickedItermAtIndex:tag];
-    
-    //iterm是否可以点击
-    if ([self.tabDataSource respondsToSelector:@selector(itermCanPressAtIndex:)] && ![self.tabDataSource itermCanPressAtIndex:tag]) {
-        return;
-    }
-    
+    [self.tabDelegate didClickItermAtIndex:tag];
+
     //记录当前选中的索引
     _selectIndex = tag;
     

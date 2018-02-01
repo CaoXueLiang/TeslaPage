@@ -7,21 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "CXLTabBarProtocol.h"
+
+@protocol CXLTarBarDelegate <NSObject>
+- (void)didClickItermAtIndex:(NSInteger)index;
+@end
 
 @interface CXLTarBar : UIScrollView
-
 /**
- 初始化方式
- @param frame frame
- @param dataSource 数据源
- @param delegate 代理
- @return TarBar
+ 初始化方法
+ @param frame 大小
+ @param array 标题数组
+ @return self
  */
-- (instancetype)initWithFrame:(CGRect)frame dataSource:(id<CXLTarBarDataSource>)dataSource delegate:(id<CXLTarBarDelegate>)delegate;
-
-/** 数据源 */
-@property (nonatomic,weak) id<CXLTarBarDataSource> tabDataSource;
+- (instancetype)initWithFrame:(CGRect)frame titleArray:(NSArray *)array;
 
 /** 代理 */
 @property (nonatomic,weak) id<CXLTarBarDelegate> tabDelegate;
