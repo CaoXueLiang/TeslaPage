@@ -56,7 +56,8 @@ static  CGFloat const KCoverHeight = 280;
 - (UIView *)preferCoverView{
     UIView *view = [[UIView alloc] initWithFrame:[self preferCoverFrame]];
     view.backgroundColor = [UIColor orangeColor];
-    
+    //取消交互，才能使View跟随ScrollView
+    view.userInteractionEnabled = NO;
     return view;
 }
 

@@ -21,9 +21,16 @@
     self.tableView.autoresizingMask = (0x1<<6) - 1;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = [UIColor clearColor];
     [self.view addSubview:self.tableView];
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+}
+
+-(void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
 }
 
 #pragma mark - UITableView M

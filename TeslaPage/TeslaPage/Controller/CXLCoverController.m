@@ -20,6 +20,10 @@
     [self loadCoverView];
 }
 
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+}
+
 - (void)loadCoverView{
     if (self.coverView) {
         [self.coverView removeFromSuperview];
@@ -51,12 +55,8 @@
     }
     
     currentOffSet = [self preferTarBarOriginalY] - top;
-    CGFloat coverTop = [self preferCoverFrame].origin.y - currentOffSet;
-    if (coverTop >= [self preferCoverFrame].origin.y - [self preferCoverFrame].size.height) {
-        self.coverView.top = coverTop;
-    }else{
-        self.coverView.top = [self preferCoverFrame].origin.y - [self preferCoverFrame].size.height;
-    }
+    CGFloat coverHeight = [self preferCoverFrame].size.height - currentOffSet;
+    self.coverView.height = MAX(0, coverHeight);
 }
 
 - (CGFloat)pageContentInsetTopAtIndex:(NSInteger)index{

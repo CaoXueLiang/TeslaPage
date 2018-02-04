@@ -276,7 +276,7 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
 }
 
 - (void)p_addVisibleViewControllerWithIndex:(NSInteger)index{
-    if (index < 0 || index > [self.dataSource numberOfControllers]) {
+    if (index < 0 || index >= [self.dataSource numberOfControllers]) {
         return;
     }
     UIViewController *controller = [self p_controllerAtIndex:index];
