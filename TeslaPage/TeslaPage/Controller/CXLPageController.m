@@ -260,13 +260,6 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
     [self p_updatePageViewAfterDragging:scrollView];
 }
 
--(void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset{
-    //水平滚动的回调
-    if ([self.delegate respondsToSelector:@selector(scrollViewContentOffsetWithRatio: draging:)]) {
-        [self.delegate scrollViewContentOffsetWithRatio:targetContentOffset->x/scrollView.frame.size.width draging:NO];
-    }
-}
-
 #pragma mark - Private Menthod
 - (void)p_removeFromeParentViewController:(UIViewController *)controller{
     //`ViewController`从`容器ViewController`添加或移除前调用
@@ -462,28 +455,5 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
     }
     return _lastContentSizeDict;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 @end

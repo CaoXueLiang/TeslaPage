@@ -54,8 +54,10 @@ static  CGFloat const KCoverHeight = 280;
 }
 
 - (UIView *)preferCoverView{
-    UIView *view = [[UIView alloc] initWithFrame:[self preferCoverFrame]];
-    view.backgroundColor = [UIColor orangeColor];
+    UIImageView *view = [[UIImageView alloc] initWithFrame:[self preferCoverFrame]];
+    view.image = [UIImage imageNamed:@"top"];
+    view.contentMode = UIViewContentModeScaleAspectFill;
+    view.clipsToBounds = YES;
     //取消交互，才能使View跟随ScrollView
     view.userInteractionEnabled = NO;
     return view;
@@ -68,6 +70,5 @@ static  CGFloat const KCoverHeight = 280;
 - (CGRect)preferCoverFrame{
     return CGRectMake(0, 0, kScreenWidth, KCoverHeight);
 }
-
 
 @end
