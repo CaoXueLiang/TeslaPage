@@ -242,11 +242,10 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
                 }
             }
         }
-        
-        //水平滚动的回调
-        if ([self.delegate respondsToSelector:@selector(scrollViewContentOffsetWithRatio: draging:)]) {
-            [self.delegate scrollViewContentOffsetWithRatio:scrollView.contentOffset.x/scrollView.width draging:YES];
-        }
+     }
+    //水平滚动的回调
+    if ([self.delegate respondsToSelector:@selector(scrollViewContentOffsetWithRatio: draging:)]) {
+        [self.delegate scrollViewContentOffsetWithRatio:scrollView.contentOffset.x/scrollView.width draging:YES];
     }
 }
 
@@ -262,6 +261,7 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
 }
 
 -(void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset{
+    //水平滚动的回调
     if ([self.delegate respondsToSelector:@selector(scrollViewContentOffsetWithRatio: draging:)]) {
         [self.delegate scrollViewContentOffsetWithRatio:targetContentOffset->x/scrollView.frame.size.width draging:NO];
     }

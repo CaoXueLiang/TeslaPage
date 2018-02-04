@@ -57,7 +57,6 @@ static const CGFloat KTarBarHeight = 50;
     [self.pageController endAppearanceTransition];
 }
 
-
 #pragma mark - Public Menthod
 - (NSInteger)preferPageFirstAtIndex{
     return 0;
@@ -71,6 +70,11 @@ static const CGFloat KTarBarHeight = 50;
     [self.pageController updateCurrentIndex:[self preferPageFirstAtIndex]];
     self.pageController.view.frame = [self preferPageViewFrame];
     [self.pageController reloadPage];
+    
+    //初始化TarBar选中的位置
+    [self.tarBar updateTarBarWithCurrentIndex:[self preferPageFirstAtIndex]];
+    [self.tarBar lineViewScrollToIndex:[self preferPageFirstAtIndex] animated:NO];
+    
 }
 
 #pragma mark - Private Menthod
@@ -174,6 +178,9 @@ static const CGFloat KTarBarHeight = 50;
         _tarBar.normalColor = [UIColor blackColor];
         _tarBar.selectColor = [UIColor orangeColor];
         _tarBar.itermPadding = 20;
+        //初始化TarBar选中的位置
+        [_tarBar updateTarBarWithCurrentIndex:[self preferPageFirstAtIndex]];
+        [_tarBar lineViewScrollToIndex:[self preferPageFirstAtIndex] animated:NO];
     }
     return _tarBar;
 }

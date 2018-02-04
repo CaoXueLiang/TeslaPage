@@ -18,10 +18,7 @@
 @property (nonatomic,assign) CGFloat maxTarBarOffsetY;
 
 /** 优先展示哪个页面, reloadData后 会调用这个方法*/
-- (NSInteger)preferPageIndexAtFirst;
-
-/** 单一tarBar是否需要展示 */
-- (BOOL)singleTarbarShouldShow;
+- (NSInteger)preferPageFirstAtIndex;
 
 /** 需要完全刷新页面时调用这个接口 */
 - (void)reloadData;

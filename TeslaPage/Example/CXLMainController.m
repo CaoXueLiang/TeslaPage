@@ -45,7 +45,7 @@ static  CGFloat const KCoverHeight = 280;
     return coverController;
 }
 
-- (NSInteger)preferPageIndexAtFirst{
+- (NSInteger)preferPageFirstAtIndex{
     return 1;
 }
 
