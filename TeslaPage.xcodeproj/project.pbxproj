@@ -16,13 +16,16 @@
 		5870B5BD2022F8C6001F07CD /* CXLTarItermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5870B5BC2022F8C6001F07CD /* CXLTarItermView.m */; };
 		5870B5C020230126001F07CD /* CXLTarBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 5870B5BF20230126001F07CD /* CXLTarBar.m */; };
 		B960A41FEC0FB96126EEEC9C /* libPods-TeslaPage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2474B4DD1C91DDA333054334 /* libPods-TeslaPage.a */; };
+		C301C4312024B38A00F3415A /* CXLPageContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = C301C4302024B38A00F3415A /* CXLPageContentView.m */; };
+		C301C4342025A5CC00F3415A /* CXLTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = C301C4332025A5CC00F3415A /* CXLTabBarController.m */; };
+		C301C4382025AE3200F3415A /* CXLCoverController.m in Sources */ = {isa = PBXBuildFile; fileRef = C301C4372025AE3200F3415A /* CXLCoverController.m */; };
+		C301C43B2026EF8000F3415A /* CXLSubListController.m in Sources */ = {isa = PBXBuildFile; fileRef = C301C43A2026EF8000F3415A /* CXLSubListController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		09C73F86A641B0E59825AE86 /* Pods-TeslaPage.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TeslaPage.release.xcconfig"; path = "Pods/Target Support Files/Pods-TeslaPage/Pods-TeslaPage.release.xcconfig"; sourceTree = "<group>"; };
 		2474B4DD1C91DDA333054334 /* libPods-TeslaPage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TeslaPage.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C96CA057A0A4986C0F56082 /* Pods-TeslaPage.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TeslaPage.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TeslaPage/Pods-TeslaPage.debug.xcconfig"; sourceTree = "<group>"; };
-		580CE48C2023261B000E70BF /* CXLPageProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXLPageProtocol.h; sourceTree = "<group>"; };
 		580CE490202326A3000E70BF /* CXLPageController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXLPageController.h; sourceTree = "<group>"; };
 		580CE491202326A3000E70BF /* CXLPageController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CXLPageController.m; sourceTree = "<group>"; };
 		5870B57C2022F42F001F07CD /* TeslaPage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TeslaPage.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -38,6 +41,17 @@
 		5870B5BC2022F8C6001F07CD /* CXLTarItermView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CXLTarItermView.m; sourceTree = "<group>"; };
 		5870B5BE20230126001F07CD /* CXLTarBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXLTarBar.h; sourceTree = "<group>"; };
 		5870B5BF20230126001F07CD /* CXLTarBar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CXLTarBar.m; sourceTree = "<group>"; };
+		C301C4292024A8F200F3415A /* CXLPageProtocols.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXLPageProtocols.h; sourceTree = "<group>"; };
+		C301C42C2024B02900F3415A /* CXLCoverProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXLCoverProtocol.h; sourceTree = "<group>"; };
+		C301C42F2024B38A00F3415A /* CXLPageContentView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXLPageContentView.h; sourceTree = "<group>"; };
+		C301C4302024B38A00F3415A /* CXLPageContentView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CXLPageContentView.m; sourceTree = "<group>"; };
+		C301C4322025A5CC00F3415A /* CXLTabBarController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXLTabBarController.h; sourceTree = "<group>"; };
+		C301C4332025A5CC00F3415A /* CXLTabBarController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CXLTabBarController.m; sourceTree = "<group>"; };
+		C301C4352025AB9D00F3415A /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
+		C301C4362025AE3200F3415A /* CXLCoverController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXLCoverController.h; sourceTree = "<group>"; };
+		C301C4372025AE3200F3415A /* CXLCoverController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CXLCoverController.m; sourceTree = "<group>"; };
+		C301C4392026EF8000F3415A /* CXLSubListController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXLSubListController.h; sourceTree = "<group>"; };
+		C301C43A2026EF8000F3415A /* CXLSubListController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CXLSubListController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +80,10 @@
 			children = (
 				580CE490202326A3000E70BF /* CXLPageController.h */,
 				580CE491202326A3000E70BF /* CXLPageController.m */,
+				C301C4322025A5CC00F3415A /* CXLTabBarController.h */,
+				C301C4332025A5CC00F3415A /* CXLTabBarController.m */,
+				C301C4362025AE3200F3415A /* CXLCoverController.h */,
+				C301C4372025AE3200F3415A /* CXLCoverController.m */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -99,6 +117,7 @@
 				5870B58A2022F42F001F07CD /* LaunchScreen.storyboard */,
 				5870B58D2022F42F001F07CD /* Info.plist */,
 				5870B58E2022F42F001F07CD /* main.m */,
+				C301C4352025AB9D00F3415A /* PrefixHeader.pch */,
 			);
 			path = TeslaPage;
 			sourceTree = "<group>";
@@ -118,6 +137,8 @@
 			children = (
 				5870B5B32022F4C0001F07CD /* CXLMainController.h */,
 				5870B5B42022F4C0001F07CD /* CXLMainController.m */,
+				C301C4392026EF8000F3415A /* CXLSubListController.h */,
+				C301C43A2026EF8000F3415A /* CXLSubListController.m */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -125,7 +146,8 @@
 		5870B5B62022F587001F07CD /* Protocol */ = {
 			isa = PBXGroup;
 			children = (
-				580CE48C2023261B000E70BF /* CXLPageProtocol.h */,
+				C301C4292024A8F200F3415A /* CXLPageProtocols.h */,
+				C301C42C2024B02900F3415A /* CXLCoverProtocol.h */,
 			);
 			path = Protocol;
 			sourceTree = "<group>";
@@ -137,6 +159,8 @@
 				5870B5BC2022F8C6001F07CD /* CXLTarItermView.m */,
 				5870B5BE20230126001F07CD /* CXLTarBar.h */,
 				5870B5BF20230126001F07CD /* CXLTarBar.m */,
+				C301C42F2024B38A00F3415A /* CXLPageContentView.h */,
+				C301C4302024B38A00F3415A /* CXLPageContentView.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -273,12 +297,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C301C4382025AE3200F3415A /* CXLCoverController.m in Sources */,
+				C301C4312024B38A00F3415A /* CXLPageContentView.m in Sources */,
 				5870B58F2022F42F001F07CD /* main.m in Sources */,
 				580CE492202326A3000E70BF /* CXLPageController.m in Sources */,
 				5870B5BD2022F8C6001F07CD /* CXLTarItermView.m in Sources */,
 				5870B5C020230126001F07CD /* CXLTarBar.m in Sources */,
+				C301C43B2026EF8000F3415A /* CXLSubListController.m in Sources */,
 				5870B5812022F42F001F07CD /* AppDelegate.m in Sources */,
 				5870B5B52022F4C0001F07CD /* CXLMainController.m in Sources */,
+				C301C4342025A5CC00F3415A /* CXLTabBarController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -407,6 +435,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 49YMBTW8W3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/TeslaPage/PrefixHeader.pch";
 				INFOPLIST_FILE = TeslaPage/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -423,6 +453,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 49YMBTW8W3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/TeslaPage/PrefixHeader.pch";
 				INFOPLIST_FILE = TeslaPage/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

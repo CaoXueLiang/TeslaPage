@@ -8,7 +8,6 @@
 
 #import "CXLTarBar.h"
 #import "CXLTarItermView.h"
-#import <YYCategories/UIView+YYAdd.h>
 
 @interface CXLTarBar()
 /**标题数组*/
@@ -99,7 +98,7 @@
     [self addSubview:self.lineView];
 }
 
-- (void)p_scrollToIndex:(NSInteger)toIndex{
+- (void)p_scrollToIndex:(NSInteger)toIndex animated:(BOOL)animated{
     //先判断一下是否可以滚动
     if (self.itermArray.count <= toIndex || self.contentSize.width < self.frame.size.width) {
         return;
@@ -114,7 +113,7 @@
     if (toIndex == self.itermArray.count - 1 && toIndex != 0) {
         nextPoint.x = self.contentSize.width - self.frame.size.width + self.contentInset.right;
     }
-    [self setContentOffset:nextPoint animated:YES];
+    [self setContentOffset:nextPoint animated:animated];
 }
 
 - (void)p_lineViewScrollToIndex:(NSInteger)toIndex animated:(BOOL)animated{
@@ -142,6 +141,22 @@
 }
 
 #pragma mark - Public Menthod
+- (void)updateTarBarWithCurrentIndex:(NSInteger)index{
+    for (int i = 0; i < self.itermArray.count; i++) {
+        CXLTarItermView *iterm = self.itermArray[i];
+        iterm.titleLabel.textColor = index == i ? _selectColor : _normalColor;
+        iterm.titleLabel.font = index == i ? _selectFont : _normalFont;
+        if (index == i) {
+            //记录当前选中的索引
+            _selectIndex = index;
+        }
+    }
+}
+
+- (void)lineViewScrollToIndex:(NSInteger)index animated:(BOOL)animated{
+    [self p_lineViewScrollToIndex:index animated:animated];
+}
+
 - (void)lineViewScrollToContentRatio:(CGFloat)contentRatio{
     //ceil如果参数是小数,则求最小的整数但不小于本身. ceil(3.4) = 4;
     int fromIndex = ceil(contentRatio) - 1;
@@ -188,7 +203,7 @@
     }
     
     //移动到相应的位置
-    [self p_scrollToIndex:_selectIndex];
+    [self p_scrollToIndex:_selectIndex animated:YES];
     [self p_lineViewScrollToIndex:_selectIndex animated:YES];
 }
 

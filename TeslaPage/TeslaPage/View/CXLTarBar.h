@@ -39,6 +39,12 @@
 /** iterm之间的间距 */
 @property (nonatomic,assign) CGFloat itermPadding;
 
+///刷新字体，颜色
+- (void)updateTarBarWithCurrentIndex:(NSInteger)index;
+
+///下划线滚动到相应的位置
+- (void)lineViewScrollToIndex:(NSInteger)index animated:(BOOL)animated;
+
 ///下划线滚动方法(pageView滑动调用)
 - (void)lineViewScrollToContentRatio:(CGFloat)contentRatio;
 @end

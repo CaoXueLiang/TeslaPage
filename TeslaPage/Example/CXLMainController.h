@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CXLCoverController.h"
 
-@interface CXLMainController : UIViewController
+@interface CXLMainController : CXLCoverController
 
 @end

@@ -1,8 +1,8 @@
 //
-//  CXLPageProtocol.h
+//  CXLPageProtocols.h
 //  TeslaPage
 //
-//  Created by bjovov on 2018/2/1.
+//  Created by 曹学亮 on 2018/2/2.
 //  Copyright © 2018年 caoxueliang.cn. All rights reserved.
 //
 
@@ -28,14 +28,32 @@
 /** 解决侧滑失效问题 */
 - (UIScreenEdgePanGestureRecognizer *)screenEdgePanGestureRecognizer;
 
-/** 页面是否可以滑动 */
-- (BOOL)isSubPageCanScrollAtIndex:(NSInteger)index;
+/** 交互切换的时候，是否预加载 */
+- (BOOL)isPreLoad;
 @end
 
 
 
 @protocol CXLPageControllerDelegate <NSObject>
 @optional
+/** 切换到子Controller */
+- (void)changeToSubController:(UIViewController *)toController;
 
+/** 横向滑动的回调 */
+- (void)scrollViewContentOffsetWithRatio:(CGFloat)ratio draging:(BOOL)draging;
+
+/** 垂直滚动的回调 */
+- (void)scrollWithPageOffset:(CGFloat)realOffset index:(NSInteger)index;
 
 @end
+
+
+//如ChildController实现了这个协议，表示Tab和Cover会跟随Page纵向滑动
+@protocol CXLSubPageControllerDataSource <NSObject>
+@optional
+/** 子controller需要实现这个方法,如果需要cover跟着上下滑动 */
+- (UIScrollView *)preferScrollView;
+@end
+
+
+
