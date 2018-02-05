@@ -74,7 +74,10 @@ static const CGFloat KTarBarHeight = 50;
     //初始化TarBar选中的位置
     [self.tarBar updateTarBarWithCurrentIndex:[self preferPageFirstAtIndex]];
     [self.tarBar lineViewScrollToIndex:[self preferPageFirstAtIndex] animated:NO];
-    
+}
+
+- (NSArray *)itermsArray{
+    return nil;
 }
 
 #pragma mark - Private Menthod
@@ -144,19 +147,14 @@ static const CGFloat KTarBarHeight = 50;
     }
 }
 
+//横向滚动回调
 - (void)scrollViewContentOffsetWithRatio:(CGFloat)ratio draging:(BOOL)draging{
-    if (!draging) {
-        [UIView animateWithDuration:0.3 animations:^{
-            [self.tarBar lineViewScrollToIndex:ratio animated:NO];
-        } completion:^(BOOL finished) {
-            [self.tarBar updateTarBarWithCurrentIndex:floor(ratio + 0.5)];
-        }];
-    }else{
-        [self.tarBar lineViewScrollToContentRatio:ratio];
-        [self.tarBar updateTarBarWithCurrentIndex:floor(ratio + 0.5)];
-    }
+    [self.tarBar lineViewScrollToContentRatio:ratio];
+    [self.tarBar scrollToIndex:ratio animated:YES];
+    [self.tarBar updateTarBarWithCurrentIndex:floor(ratio + 0.5)];
 }
 
+//垂直滚动回调
 - (void)scrollWithPageOffset:(CGFloat)realOffset index:(NSInteger)index{
     CGFloat offset = realOffset + [self pageContentInsetTopAtIndex:index];
     self.tarBar.top = [self p_tabBarTopWithContentOffset:offset];
@@ -170,14 +168,14 @@ static const CGFloat KTarBarHeight = 50;
 #pragma mark - Setter && Getter
 - (CXLTarBar *)tarBar{
     if (!_tarBar) {
-        _tarBar = [[CXLTarBar alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), KTarBarHeight) titleArray:@[@"第一个",@"第二个",@"第三个"]];
+        _tarBar = [[CXLTarBar alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), KTarBarHeight)];
         _tarBar.tabDelegate = self;
-        _tarBar.backgroundColor = [UIColor whiteColor];
         _tarBar.normalFont = [UIFont systemFontOfSize:15];
         _tarBar.selectFont = [UIFont systemFontOfSize:15];
         _tarBar.normalColor = [UIColor blackColor];
         _tarBar.selectColor = [UIColor orangeColor];
         _tarBar.itermPadding = 20;
+        [_tarBar setTarBarItermArray:[self itermsArray]];
         //初始化TarBar选中的位置
         [_tarBar updateTarBarWithCurrentIndex:[self preferPageFirstAtIndex]];
         [_tarBar lineViewScrollToIndex:[self preferPageFirstAtIndex] animated:NO];

@@ -22,13 +22,10 @@
 
 @implementation CXLTarBar
 #pragma mark - Init Menthod
-- (instancetype)initWithFrame:(CGRect)frame titleArray:(NSArray *)array{
+- (instancetype)initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
     if (self) {
-        _titleArray = [array copy];
-        [self p_setProperty];
-        [self p_setTarItermView];
-        [self p_setLineView];
+        self.backgroundColor = [UIColor whiteColor];
     }
     return self;
 }
@@ -47,7 +44,7 @@
     self.scrollsToTop = NO;
     self.showsHorizontalScrollIndicator = NO;
     self.showsVerticalScrollIndicator = NO;
-    self.backgroundColor = [UIColor clearColor];
+    self.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)p_setTarItermView{
@@ -141,6 +138,13 @@
 }
 
 #pragma mark - Public Menthod
+- (void)setTarBarItermArray:(NSArray *)itermArray{
+    _titleArray = [itermArray copy];
+    [self p_setProperty];
+    [self p_setTarItermView];
+    [self p_setLineView];
+}
+
 - (void)updateTarBarWithCurrentIndex:(NSInteger)index{
     for (int i = 0; i < self.itermArray.count; i++) {
         CXLTarItermView *iterm = self.itermArray[i];
@@ -155,6 +159,10 @@
 
 - (void)lineViewScrollToIndex:(NSInteger)index animated:(BOOL)animated{
     [self p_lineViewScrollToIndex:index animated:animated];
+}
+
+- (void)scrollToIndex:(NSInteger)toIndex animated:(BOOL)animated{
+    [self p_scrollToIndex:toIndex animated:animated];
 }
 
 - (void)lineViewScrollToContentRatio:(CGFloat)contentRatio{
@@ -195,14 +203,9 @@
 
     //记录当前选中的索引
     _selectIndex = tag;
-    
-    for (int i = 0; i < self.itermArray.count; i++) {
-        CXLTarItermView *iterm = self.itermArray[i];
-        iterm.titleLabel.textColor = _selectIndex == i ? _selectColor : _normalColor;
-        iterm.titleLabel.font = _selectIndex == i ? _selectFont : _normalFont;
-    }
-    
+
     //移动到相应的位置
+    [self updateTarBarWithCurrentIndex:_selectIndex];
     [self p_scrollToIndex:_selectIndex animated:YES];
     [self p_lineViewScrollToIndex:_selectIndex animated:YES];
 }

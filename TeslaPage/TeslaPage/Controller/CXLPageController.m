@@ -243,9 +243,16 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
             }
         }
      }
-    //水平滚动的回调
-    if ([self.delegate respondsToSelector:@selector(scrollViewContentOffsetWithRatio: draging:)]) {
-        [self.delegate scrollViewContentOffsetWithRatio:scrollView.contentOffset.x/scrollView.width draging:YES];
+    
+    /**
+     当点击TarBar切换界面时，不调用代理方法
+     scrollView.tracking = NO，scrollView.dragging = NO，scrollView.decelerating = NO
+     */
+    if (scrollView == self.scrollView && !(scrollView.tracking == NO && scrollView.dragging == NO && scrollView.decelerating == NO)) {
+        //水平滚动的回调
+        if ([self.delegate respondsToSelector:@selector(scrollViewContentOffsetWithRatio: draging:)]) {
+            [self.delegate scrollViewContentOffsetWithRatio:scrollView.contentOffset.x/scrollView.width draging:YES];
+        }
     }
 }
 

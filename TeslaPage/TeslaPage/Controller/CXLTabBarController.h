@@ -20,6 +20,9 @@
 /** 优先展示哪个页面, reloadData后 会调用这个方法*/
 - (NSInteger)preferPageFirstAtIndex;
 
+/** 设置TarBarIterm数组 */
+- (NSArray *)itermsArray;
+
 /** 需要完全刷新页面时调用这个接口 */
 - (void)reloadData;
 

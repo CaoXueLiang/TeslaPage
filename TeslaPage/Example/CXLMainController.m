@@ -28,7 +28,7 @@ static  CGFloat const KCoverHeight = 280;
 }
 
 - (NSInteger)numberOfControllers{
-    return 3;
+    return 6;
 }
 
 - (UIViewController *)controllerAtIndex:(NSInteger)index{
@@ -36,11 +36,11 @@ static  CGFloat const KCoverHeight = 280;
     coverController.view.frame = [self preferPageViewFrame];
     
     if (index == 0) {
-        coverController.view.backgroundColor = [UIColor greenColor];
+        coverController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
     } else if (index == 1) {
-        coverController.view.backgroundColor = [UIColor blueColor];
+        coverController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
     } else {
-        coverController.view.backgroundColor = [UIColor purpleColor];
+        coverController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
     }
     return coverController;
 }
@@ -69,6 +69,10 @@ static  CGFloat const KCoverHeight = 280;
 
 - (CGRect)preferCoverFrame{
     return CGRectMake(0, 0, kScreenWidth, KCoverHeight);
+}
+
+- (NSArray *)itermsArray{
+    return @[@"第一页",@"第二页",@"第三页",@"第四页",@"第五页",@"第六页",];
 }
 
 @end

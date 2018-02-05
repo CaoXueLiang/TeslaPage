@@ -13,14 +13,6 @@
 @end
 
 @interface CXLTarBar : UIScrollView
-/**
- 初始化方法
- @param frame 大小
- @param array 标题数组
- @return self
- */
-- (instancetype)initWithFrame:(CGRect)frame titleArray:(NSArray *)array;
-
 /** 代理 */
 @property (nonatomic,weak) id<CXLTarBarDelegate> tabDelegate;
 
@@ -39,11 +31,17 @@
 /** iterm之间的间距 */
 @property (nonatomic,assign) CGFloat itermPadding;
 
-///刷新字体，颜色
+///设置iterm数组
+- (void)setTarBarItermArray:(NSArray *)itermArray;
+
+///刷新字体，颜色属性
 - (void)updateTarBarWithCurrentIndex:(NSInteger)index;
 
 ///下划线滚动到相应的位置
 - (void)lineViewScrollToIndex:(NSInteger)index animated:(BOOL)animated;
+
+//设置选中Iterm的contentOffset
+- (void)scrollToIndex:(NSInteger)toIndex animated:(BOOL)animated;
 
 ///下划线滚动方法(pageView滑动调用)
 - (void)lineViewScrollToContentRatio:(CGFloat)contentRatio;
