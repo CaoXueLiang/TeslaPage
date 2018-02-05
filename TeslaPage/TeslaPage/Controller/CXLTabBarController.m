@@ -12,11 +12,12 @@
 
 static const CGFloat KTarBarHeight = 50;
 @interface CXLTabBarController ()<CXLTarBarDelegate>
-
 /** TarBar视图 */
 @property (nonatomic,strong) CXLTarBar *tarBar;
 /** 分页视图 */
 @property (nonatomic,strong) CXLPageController *pageController;
+/** 记录tarBar的Y轴位置 */
+@property (nonatomic,assign) CGFloat tarBarY;
 @end
 
 @implementation CXLTabBarController
@@ -130,21 +131,23 @@ static const CGFloat KTarBarHeight = 50;
 
 #pragma mark - CXLPageControllerDelegate
 - (void)changeToSubController:(UIViewController *)toController{
-    if (!toController || [self numberOfControllers] <= 1) {
-        return;
-    }
-    
-    if ([toController conformsToProtocol:@protocol(CXLSubPageControllerDataSource)]) {
-        NSInteger newIndex = [self.pageController indexOfController:(UIViewController<CXLSubPageControllerDataSource> *)toController];
-        CGFloat pageTop = [self pageContentInsetTopAtIndex:newIndex];
-        CGFloat top = [self p_tabBarTopWithContentOffset:[(UIViewController<CXLSubPageControllerDataSource> *)toController preferScrollView].contentOffset.y + pageTop];
-        
-        //如果高度相同，不去修改offSet
-        if (fabs(top - self.tarBar.top) > 0.1) {
-            CGFloat scrollOffSet = [self preferTarBarOriginalY] - self.tarBar.top - [self pageContentInsetTopAtIndex:newIndex];
-            [(UIViewController<CXLSubPageControllerDataSource> *)toController preferScrollView].contentOffset = CGPointMake(0, scrollOffSet);
-        }
-    }
+//    if (!toController || [self numberOfControllers] <= 1) {
+//        return;
+//    }
+//
+//    if ([toController conformsToProtocol:@protocol(CXLSubPageControllerDataSource)]) {
+//        NSInteger newIndex = [self.pageController indexOfController:(UIViewController<CXLSubPageControllerDataSource> *)toController];
+//        CGFloat pageTop = [self pageContentInsetTopAtIndex:newIndex];
+//        CGFloat top = [self p_tabBarTopWithContentOffset:[(UIViewController<CXLSubPageControllerDataSource> *)toController preferScrollView].contentOffset.y + pageTop];
+//
+//        NSLog(@"%@",NSStringFromCGRect(self.tarBar.frame));
+//
+//        //如果高度相同，不去修改offSet
+//        if (fabs(top - self.tarBar.frame.origin.y) > 0.1) {
+//            CGFloat scrollOffSet = [self preferTarBarOriginalY] - self.tarBar.top - [self pageContentInsetTopAtIndex:newIndex];
+//            [(UIViewController<CXLSubPageControllerDataSource> *)toController preferScrollView].contentOffset = CGPointMake(0, scrollOffSet);
+//        }
+//    }
 }
 
 //横向滚动回调

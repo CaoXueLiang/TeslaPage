@@ -36,11 +36,13 @@ static  CGFloat const KCoverHeight = 280;
     coverController.view.frame = [self preferPageViewFrame];
     
     if (index == 0) {
-        coverController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+        coverController.view.backgroundColor = [UIColor greenColor];
     } else if (index == 1) {
-        coverController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    } else {
-        coverController.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+        coverController.view.backgroundColor = [UIColor blueColor];
+    } else if (index == 2){
+        coverController.view.backgroundColor = [UIColor purpleColor];
+    }else if (index == 3){
+        coverController.view.backgroundColor = [UIColor yellowColor];
     }
     return coverController;
 }
@@ -50,7 +52,7 @@ static  CGFloat const KCoverHeight = 280;
 }
 
 - (BOOL)isPreLoad {
-    return YES;
+    return NO;
 }
 
 - (UIView *)preferCoverView{

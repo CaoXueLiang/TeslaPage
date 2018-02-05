@@ -61,7 +61,7 @@
 
 - (CGFloat)pageContentInsetTopAtIndex:(NSInteger)index{
     CGFloat pageTop = [super pageContentInsetTopAtIndex:index];
-    return pageTop > [self preferCoverFrame].origin.x + [self preferCoverFrame].size.height ? pageTop : [self preferCoverFrame].origin.y + [self preferCoverFrame].size.height;
+    return pageTop > [self preferCoverFrame].origin.y + [self preferCoverFrame].size.height ? pageTop : [self preferCoverFrame].origin.y + [self preferCoverFrame].size.height;
 }
 
 #pragma mark - CXLCoverControllerDataSource

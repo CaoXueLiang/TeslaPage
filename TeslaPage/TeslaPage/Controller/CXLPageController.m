@@ -344,13 +344,19 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
 }
 
 - (void)showPageAtIndex:(NSInteger)index animated:(BOOL)animated{
-    self.lastSelectedIndex = self.currentPageIndex;
-    self.currentPageIndex = index;
-    
-    if ([self.delegate respondsToSelector:@selector(changeToSubController:)]) {
-        [self.delegate changeToSubController:[self p_controllerAtIndex:index]];
+    //选中的是当前索引，不进行任何操作
+    if (self.currentPageIndex == index) {
+        return;
     }
     
+    NSLog(@"上一个索引:%ld---当前索引:%ld",self.currentPageIndex,index);
+    self.lastSelectedIndex = self.currentPageIndex;
+    self.currentPageIndex = index;
+
+//    if ([self.delegate respondsToSelector:@selector(changeToSubController:)]) {
+//        [self.delegate changeToSubController:[self p_controllerAtIndex:self.currentPageIndex]];
+//    }
+//
     [self p_addVisibleViewControllerWithIndex:index];
     [self p_scrollAnimation:animated];
 }
@@ -359,22 +365,18 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
     UIViewController *lastController = [self p_controllerAtIndex:self.lastSelectedIndex];
     UIViewController *currentController = [self p_controllerAtIndex:self.currentPageIndex];
     
+    
+    
     [currentController beginAppearanceTransition:YES animated:animated];
-    if (self.currentPageIndex != self.lastSelectedIndex) {
-        [lastController beginAppearanceTransition:NO animated:animated];
-    }
+    [lastController beginAppearanceTransition:NO animated:animated];
+    
+    [self.delegate changeToSubController:currentController];
     
     //设置ScrollView的contentOffSet
     [self.scrollView setContentOffset:[self.scrollView calculationOffsetAtIndex:self.currentPageIndex] animated:NO];
     
     [currentController endAppearanceTransition];
-    if (self.currentPageIndex != self.lastSelectedIndex) {
-        [lastController endAppearanceTransition];
-    }
-    
-    if ([self.delegate respondsToSelector:@selector(changeToSubController:)]) {
-        [self.delegate changeToSubController:currentController];
-    }
+    [lastController endAppearanceTransition];
 }
 
 - (UIScreenEdgePanGestureRecognizer *)p_screenEdgePanGestureRecognizer{
