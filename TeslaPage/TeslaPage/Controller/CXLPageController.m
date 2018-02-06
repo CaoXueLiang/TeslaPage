@@ -9,12 +9,6 @@
 #import "CXLPageController.h"
 #import "CXLPageContentView.h"
 
-/**滚动方向*/
-typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
-    CXLPageScrollDirectionLeft = 0,
-    CXLPageScrollDirectionRight = 1,
-};
-
 @interface CXLPageController ()<UIScrollViewDelegate>
 /** 容器scrollView */
 @property (nonatomic,strong) CXLPageContentView *scrollView;
@@ -32,9 +26,8 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
 @property (nonatomic,assign) NSInteger guessToIndex;
 /** 初始偏移量 */
 @property (nonatomic,assign) CGFloat originalOffset;
-@property (nonatomic,assign) BOOL firstWillAppear;
-@property (nonatomic,assign) BOOL firstWillLayoutSubViews;
-@property (nonatomic,assign) BOOL firstDidAppear;
+/** 是否是第一次 */
+@property (nonatomic,assign) BOOL isFirst;
 @end
 
 @implementation CXLPageController
@@ -42,60 +35,35 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor clearColor];
-    self.firstWillAppear = YES;
-    self.firstDidAppear = YES;
-    self.firstWillLayoutSubViews = YES;
+    self.isFirst = YES;
     
     self.scrollView = [[CXLPageContentView alloc]initWithFrame:self.view.bounds];
     self.scrollView.delegate = self;
     [self.view addSubview:self.scrollView];
+    [self setUp];
+}
+
+- (void)setUp{
+    //解决手势冲突
+    if ([self.dataSource respondsToSelector:@selector(screenEdgePanGestureRecognizer)] && [self.dataSource screenEdgePanGestureRecognizer]) {
+        [self.scrollView.panGestureRecognizer requireGestureRecognizerToFail:[self.dataSource screenEdgePanGestureRecognizer]];
+    }else{
+        if ([self p_screenEdgePanGestureRecognizer]) {
+            [self.scrollView.panGestureRecognizer requireGestureRecognizerToFail:[self p_screenEdgePanGestureRecognizer]];
+        }
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    if (self.firstWillAppear) {
-        //滚动到指定索引
-        if ([self.delegate respondsToSelector:@selector(changeToSubController:)]) {
-            [self.delegate changeToSubController:[self p_controllerAtIndex:self.currentPageIndex]];
-        }
-        
-        //解决手势冲突
-        if ([self.dataSource respondsToSelector:@selector(screenEdgePanGestureRecognizer)] && [self.dataSource screenEdgePanGestureRecognizer]) {
-            [self.scrollView.panGestureRecognizer requireGestureRecognizerToFail:[self.dataSource screenEdgePanGestureRecognizer]];
-        }else{
-            if ([self p_screenEdgePanGestureRecognizer]) {
-                [self.scrollView.panGestureRecognizer requireGestureRecognizerToFail:[self p_screenEdgePanGestureRecognizer]];
-            }
-        }
-        self.firstWillAppear = NO;
-        [self p_updateScrollViewLayoutIfNeed];
-    }
-    
-    [[self p_controllerAtIndex:self.currentPageIndex] beginAppearanceTransition:YES animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    if (self.firstDidAppear) {
-        //滚动到指定索引
-        if ([self.delegate respondsToSelector:@selector(changeToSubController:)]) {
-            [self.delegate changeToSubController:[self p_controllerAtIndex:self.currentPageIndex]];
-        }
-        self.firstDidAppear = NO;
-    }
-    
-    [[self p_controllerAtIndex:self.currentPageIndex] endAppearanceTransition];
 }
 
 - (void)viewWillLayoutSubviews{
     [super viewWillLayoutSubviews];
-    if (self.firstWillLayoutSubViews) {
-        [self p_updateScrollViewLayoutIfNeed];
-        [self p_updateScrollViewDisplayIndexIfNeed];
-        self.firstWillLayoutSubViews = NO;
-    }else{
-        [self p_updateScrollViewLayoutIfNeed];
-    }
 }
 
 - (void)viewDidLayoutSubviews{
@@ -116,9 +84,13 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
 
 - (void)reloadPage{
     [self clearMemory];
-    [self p_addVisibleViewControllerWithIndex:self.currentPageIndex];
-    [self p_updateScrollViewLayoutIfNeed];
+    [self.scrollView setIterm:self.dataSource];
     [self showPageAtIndex:self.currentPageIndex animated:YES];
+
+    //滚动到指定索引
+    if ([self.delegate respondsToSelector:@selector(changeToSubController:)]) {
+        [self.delegate changeToSubController:[self p_controllerAtIndex:self.currentPageIndex]];
+    }
 }
 
 - (void)clearMemory{
@@ -189,53 +161,35 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
 #pragma mark - UIScrollViewDelegate
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     if (scrollView == self.scrollView && scrollView.isDragging) {
+        NSInteger maxCount = [self.dataSource numberOfControllers];
         CGFloat offset = scrollView.contentOffset.x;
         CGFloat width = scrollView.width;
-        NSInteger lastGuestureIndex = self.guessToIndex < 0 ? self.currentPageIndex : self.guessToIndex;
+        NSInteger lastSelectIndex = self.currentPageIndex;
         
         if (self.originalOffset < offset) {
-            self.guessToIndex = ceil(offset/width);
+            self.guessToIndex = MIN(maxCount, ceil(offset/width));
         }else if (self.originalOffset >= offset){
-            self.guessToIndex = floor(offset/width);
+            self.guessToIndex = MAX(0, floor(offset/width));
         }
         
-        NSInteger maxCount = [self.dataSource numberOfControllers];
         if ([self p_isPreLoad]) {
             //预加载
-            if (lastGuestureIndex != self.guessToIndex &&
-                self.guessToIndex != self.currentPageIndex &&
-                self.guessToIndex >= 0 &&
-                self.guessToIndex < maxCount) {
+            if (lastSelectIndex != self.guessToIndex){
                 
+                //NSLog(@"%ld-----%ld",self.currentPageIndex,self.guessToIndex);
                 UIViewController *fromVC = [self p_controllerAtIndex:self.currentPageIndex];
                 UIViewController *toVC = [self p_controllerAtIndex:self.guessToIndex];
                 
                 if ([self.delegate respondsToSelector:@selector(changeToSubController:)]) {
                     [self.delegate changeToSubController:toVC];
                 }
-                
-                //管理生命周期
-                [toVC beginAppearanceTransition:YES animated:YES];
-                if (lastGuestureIndex == self.currentPageIndex) {
-                    [fromVC beginAppearanceTransition:NO animated:YES];
-                }
-                
-                if (lastGuestureIndex != self.currentPageIndex &&
-                    lastGuestureIndex >= 0 &&
-                    lastGuestureIndex < maxCount) {
-                    UIViewController *lastGuestVC = [self p_controllerAtIndex:lastGuestureIndex];
-                    [lastGuestVC beginAppearanceTransition:NO animated:YES];
-                    [lastGuestVC endAppearanceTransition];
-                }
+
             }
         }else{
             //非预加载
             if (self.guessToIndex != self.currentPageIndex &&
                 !self.scrollView.isDecelerating) {
-                if (lastGuestureIndex != self.guessToIndex &&
-                    self.guessToIndex >= 0 &&
-                    self.guessToIndex < maxCount) {
-                    
+                if (lastSelectIndex != self.guessToIndex){
                     if ([self.delegate respondsToSelector:@selector(changeToSubController:)]) {
                         [self.delegate changeToSubController:[self p_controllerAtIndex:self.currentPageIndex]];
                     }
@@ -263,6 +217,7 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
     }
 }
 
+/** 滚动停止时调用*/
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
     [self p_updatePageViewAfterDragging:scrollView];
 }
@@ -270,11 +225,15 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
 #pragma mark - Private Menthod
 - (void)p_removeFromeParentViewController:(UIViewController *)controller{
     //`ViewController`从`容器ViewController`添加或移除前调用
+    // removeChildViewController
     [controller willMoveToParentViewController:nil];
+    [controller beginAppearanceTransition:NO animated:YES];
     [controller.view removeFromSuperview];
+    [controller endAppearanceTransition];
     [controller removeFromParentViewController];
 }
 
+/** 将当前索引控制器添加到Self */
 - (void)p_addVisibleViewControllerWithIndex:(NSInteger)index{
     if (index < 0 || index >= [self.dataSource numberOfControllers]) {
         return;
@@ -282,14 +241,15 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
     UIViewController *controller = [self p_controllerAtIndex:index];
     CGRect childViewFrame = [self.scrollView calculationVisibleViewControllerFrameAtIndex:index];
     if (![self.childViewControllers containsObject:controller]) {
+        // addChildViewController
         [self addChildViewController:controller];
-        [self didMoveToParentViewController:controller];
+        controller.view.frame = childViewFrame;
+        [self.scrollView addSubview:controller.view];
+        [controller didMoveToParentViewController:self];
     }
-    [super addChildViewController:controller];
-    controller.view.frame = childViewFrame;
-    [self.scrollView addSubview:controller.view];
 }
 
+/** 获取保存在字典中的当前索引的控制器*/
 - (UIViewController *)p_controllerAtIndex:(NSInteger)index{
     if (![self.controllersDict objectForKey:@(index)]) {
         UIViewController *controller = [self.dataSource controllerAtIndex:index];
@@ -298,10 +258,17 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
             if ([controller conformsToProtocol:@protocol(CXLSubPageControllerDataSource)]) {
                 //绑定scrollView通知
                 [self p_bindController:(UIViewController<CXLSubPageControllerDataSource> *)controller index:index];
+                
+                //添加子控制器
+                CGRect childViewFrame = [self.scrollView calculationVisibleViewControllerFrameAtIndex:index];
+                if (![self.childViewControllers containsObject:controller]) {
+                    [self addChildViewController:controller];
+                    controller.view.frame = childViewFrame;
+                    [self.scrollView addSubview:controller.view];
+                    [controller didMoveToParentViewController:self];
+                }
             }
-            
             [self.controllersDict setObject:controller forKey:@(index)];
-            [self p_addVisibleViewControllerWithIndex:index];
         }
     }
     return [self.controllersDict objectForKey:@(index)];
@@ -324,59 +291,35 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
     }
     
     [scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:nil];
-    
     scrollView.contentOffset = CGPointMake(0, -scrollView.contentInset.top);
-}
-
-- (void)p_updateScrollViewLayoutIfNeed{
-    if (self.scrollView.width > 0) {
-        [self.scrollView setIterm:self.dataSource];
-    }
-}
-
-- (void)p_updateScrollViewDisplayIndexIfNeed{
-    if (self.scrollView.width <= 0) {
-        return;
-    }
-    [self p_addVisibleViewControllerWithIndex:self.currentPageIndex];
-    self.scrollView.contentOffset = [self.scrollView calculationOffsetAtIndex:self.currentPageIndex];
-    [self p_controllerAtIndex:self.currentPageIndex].view.frame = [self.scrollView calculationVisibleViewControllerFrameAtIndex:self.currentPageIndex];
 }
 
 - (void)showPageAtIndex:(NSInteger)index animated:(BOOL)animated{
     //选中的是当前索引，不进行任何操作
-    if (self.currentPageIndex == index) {
+    if (self.currentPageIndex == index && !self.isFirst) {
         return;
     }
-    
-    NSLog(@"上一个索引:%ld---当前索引:%ld",self.currentPageIndex,index);
     self.lastSelectedIndex = self.currentPageIndex;
     self.currentPageIndex = index;
-
-//    if ([self.delegate respondsToSelector:@selector(changeToSubController:)]) {
-//        [self.delegate changeToSubController:[self p_controllerAtIndex:self.currentPageIndex]];
-//    }
-//
-    [self p_addVisibleViewControllerWithIndex:index];
     [self p_scrollAnimation:animated];
+    self.isFirst = NO;
 }
 
 - (void)p_scrollAnimation:(BOOL)animated{
     UIViewController *lastController = [self p_controllerAtIndex:self.lastSelectedIndex];
     UIViewController *currentController = [self p_controllerAtIndex:self.currentPageIndex];
+
     
-    
-    
-    [currentController beginAppearanceTransition:YES animated:animated];
-    [lastController beginAppearanceTransition:NO animated:animated];
-    
-    [self.delegate changeToSubController:currentController];
-    
+//    [lastController beginAppearanceTransition:NO animated:animated];
+//    [currentController beginAppearanceTransition:YES animated:NO];
+
     //设置ScrollView的contentOffSet
     [self.scrollView setContentOffset:[self.scrollView calculationOffsetAtIndex:self.currentPageIndex] animated:NO];
     
-    [currentController endAppearanceTransition];
-    [lastController endAppearanceTransition];
+    //[self.delegate changeToSubController:currentController];
+    
+//    [lastController endAppearanceTransition];
+//    [currentController endAppearanceTransition];
 }
 
 - (UIScreenEdgePanGestureRecognizer *)p_screenEdgePanGestureRecognizer{
@@ -398,33 +341,29 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
     NSInteger newIndex = [self.scrollView calculationIndexWithOffset:scrollView.contentOffset.x width:scrollView.width];
     NSInteger oldIndex = self.currentPageIndex;
     self.currentPageIndex = newIndex;
-    
-    UIViewController *oldController = [self p_controllerAtIndex:oldIndex];
-    UIViewController *newController = [self p_controllerAtIndex:newIndex];
-    UIViewController *guessController = [self p_controllerAtIndex:self.guessToIndex];
-    
-    if (newIndex == oldIndex) {
-        if (self.guessToIndex >= 0 && self.guessToIndex < [self.dataSource numberOfControllers]) {
-            [oldController beginAppearanceTransition:YES animated:YES];
-            [oldController endAppearanceTransition];
-            
-            [guessController beginAppearanceTransition:NO animated:YES];
-            [guessController endAppearanceTransition];
-        }
-    }else{
-        if (![self p_isPreLoad]) {
-            [newController beginAppearanceTransition:YES animated:YES];
-            [oldController beginAppearanceTransition:NO animated:YES];
-        }
-        [newController endAppearanceTransition];
-        [oldController endAppearanceTransition];
+ 
+    if (newIndex != oldIndex) {
+        return;
     }
-    
+//    UIViewController *oldController = [self p_controllerAtIndex:oldIndex];
+//    UIViewController *newController = [self p_controllerAtIndex:newIndex];
+//
+//    [newController beginAppearanceTransition:YES animated:YES];
+//    [oldController beginAppearanceTransition:NO animated:YES];
+//
     self.originalOffset = scrollView.contentOffset.x;
     self.guessToIndex = newIndex;
     if ([self.delegate respondsToSelector:@selector(changeToSubController:)]) {
         [self.delegate changeToSubController:[self p_controllerAtIndex:self.currentPageIndex]];
     }
+    
+//    if (![self.dataSource isPreLoad]) {
+//        [newController beginAppearanceTransition:YES animated:YES];
+//        [oldController beginAppearanceTransition:NO animated:YES];
+//    }
+//   
+//    [newController endAppearanceTransition];
+//    [oldController endAppearanceTransition];
 }
 
 #pragma mark - Public Menthod
@@ -447,6 +386,10 @@ typedef NS_ENUM(NSInteger,CXLPageScrollDirection) {
 - (NSMutableDictionary *)controllersDict{
     if (!_controllersDict) {
         _controllersDict = [[NSMutableDictionary alloc]init];
+//        for (int i = 0; i < [self.dataSource numberOfControllers]; i++) {
+//            UIViewController *controller = [self p_controllerAtIndex:i];
+//            [_controllersDict setObject:controller forKey:@(i)];
+//        }
     }
     return _controllersDict;
 }

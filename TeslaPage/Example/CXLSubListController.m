@@ -7,6 +7,7 @@
 //
 
 #import "CXLSubListController.h"
+#import "CXLMainController.h"
 
 @interface CXLSubListController ()
 <UITableViewDelegate,UITableViewDataSource>
@@ -27,10 +28,22 @@
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
+    NSLog(@"------viewWillAppear 索引:%ld----",self.currentIndex);
 }
 
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
+    NSLog(@"------viewDidAppear 索引:%ld----",self.currentIndex);
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    NSLog(@"------viewWillDisappear 索引:%ld----",self.currentIndex);
+}
+
+- (void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    NSLog(@"------viewDidDisappear 索引:%ld----",self.currentIndex);
 }
 
 #pragma mark - UITableView M
@@ -56,6 +69,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    CXLMainController *controller = [[CXLMainController alloc]init];
+    [self.navigationController pushViewController:controller animated:YES];
+    self.navigationController.navigationItem.title = [NSString stringWithFormat:@"索引%ld",indexPath.row];
 }
 
 #pragma mark - CXLSubPageControllerDataSource

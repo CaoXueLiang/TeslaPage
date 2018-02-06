@@ -10,5 +10,5 @@
 #import "CXLPageProtocols.h"
 
 @interface CXLSubListController : UIViewController<CXLSubPageControllerDataSource>
-
+@property (nonatomic,assign) NSInteger currentIndex;
 @end

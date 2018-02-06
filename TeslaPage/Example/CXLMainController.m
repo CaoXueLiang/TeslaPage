@@ -21,6 +21,7 @@ static  CGFloat const KCoverHeight = 280;
     self.navigationItem.title = @"首页";
     self.navigationController.navigationBar.barTintColor = [UIColor redColor];
     self.automaticallyAdjustsScrollViewInsets = NO;
+    [self reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -34,7 +35,7 @@ static  CGFloat const KCoverHeight = 280;
 - (UIViewController *)controllerAtIndex:(NSInteger)index{
     CXLSubListController *coverController = [[CXLSubListController alloc] init];
     coverController.view.frame = [self preferPageViewFrame];
-    
+    coverController.currentIndex = index;
     if (index == 0) {
         coverController.view.backgroundColor = [UIColor greenColor];
     } else if (index == 1) {
@@ -52,7 +53,7 @@ static  CGFloat const KCoverHeight = 280;
 }
 
 - (BOOL)isPreLoad {
-    return NO;
+    return YES;
 }
 
 - (UIView *)preferCoverView{
