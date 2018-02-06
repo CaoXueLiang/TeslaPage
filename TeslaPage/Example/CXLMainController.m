@@ -44,6 +44,8 @@ static  CGFloat const KCoverHeight = 280;
         coverController.view.backgroundColor = [UIColor purpleColor];
     }else if (index == 3){
         coverController.view.backgroundColor = [UIColor yellowColor];
+    }else{
+        coverController.view.backgroundColor = [UIColor whiteColor];
     }
     return coverController;
 }

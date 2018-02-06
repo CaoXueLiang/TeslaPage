@@ -16,8 +16,8 @@ static const CGFloat KTarBarHeight = 50;
 @property (nonatomic,strong) CXLTarBar *tarBar;
 /** 分页视图 */
 @property (nonatomic,strong) CXLPageController *pageController;
-/** 记录tarBar的Y轴位置 */
-@property (nonatomic,assign) CGFloat tarBarY;
+/** 解决水平滚动*/
+@property (nonatomic,assign) BOOL cannotScrollWithPageOffset;
 @end
 
 @implementation CXLTabBarController
@@ -40,7 +40,8 @@ static const CGFloat KTarBarHeight = 50;
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-//    [self.pageController beginAppearanceTransition:YES animated:animated];
+    self.cannotScrollWithPageOffset = NO;
+    [self.pageController beginAppearanceTransition:YES animated:animated];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -50,7 +51,8 @@ static const CGFloat KTarBarHeight = 50;
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-//    [self.pageController beginAppearanceTransition:NO animated:animated];
+    self.cannotScrollWithPageOffset = YES;
+    [self.pageController beginAppearanceTransition:NO animated:animated];
 }
 
 - (void)viewDidDisappear:(BOOL)animated{
@@ -129,8 +131,13 @@ static const CGFloat KTarBarHeight = 50;
     return NO;
 }
 
+- (BOOL)getCannotScrollWithPageOffset{
+    return self.cannotScrollWithPageOffset;
+}
+
 #pragma mark - CXLPageControllerDelegate
 - (void)changeToSubController:(UIViewController *)toController{
+    self.cannotScrollWithPageOffset = NO;
     if (!toController || [self numberOfControllers] <= 1) {
         return;
     }
@@ -162,7 +169,10 @@ static const CGFloat KTarBarHeight = 50;
 - (void)scrollWithPageOffset:(CGFloat)realOffset index:(NSInteger)index{
     CGFloat offset = realOffset + [self pageContentInsetTopAtIndex:index];
     self.tarBar.top = [self p_tabBarTopWithContentOffset:offset];
-    //NSLog(@"垂直滚动---%f---",realOffset);
+}
+
+- (void)willChangeInit{
+    self.cannotScrollWithPageOffset = YES;
 }
 
 #pragma mark - CXLTarBarDelegate

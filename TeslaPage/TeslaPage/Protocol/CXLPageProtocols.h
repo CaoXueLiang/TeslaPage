@@ -30,6 +30,9 @@
 
 /** 交互切换的时候，是否预加载 */
 - (BOOL)isPreLoad;
+
+/** 解决非交互切换 contentInsert问题*/
+- (BOOL)getCannotScrollWithPageOffset;
 @end
 
 
@@ -45,6 +48,8 @@
 /** 垂直滚动的回调 */
 - (void)scrollWithPageOffset:(CGFloat)realOffset index:(NSInteger)index;
 
+/** 解决点击非交互切换 contentInsert问题 */
+- (void)willChangeInit;
 @end
 
 

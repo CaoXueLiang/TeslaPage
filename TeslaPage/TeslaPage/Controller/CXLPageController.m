@@ -22,10 +22,6 @@
 @property (nonatomic,assign) NSInteger lastSelectedIndex;
 /** 当前选中的索引 */
 @property (nonatomic,assign,readwrite) NSInteger currentPageIndex;
-/** 将要移动到的索引 */
-@property (nonatomic,assign) NSInteger guessToIndex;
-/** 初始偏移量 */
-@property (nonatomic,assign) CGFloat originalOffset;
 /** 是否是第一次 */
 @property (nonatomic,assign) BOOL isFirst;
 @end
@@ -54,20 +50,15 @@
     }
 }
 
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [[self p_controllerAtIndex:self.currentPageIndex] beginAppearanceTransition:NO animated:YES];
 }
 
-- (void)viewDidAppear:(BOOL)animated{
-    [super viewDidAppear:animated];
-}
-
-- (void)viewWillLayoutSubviews{
-    [super viewWillLayoutSubviews];
-}
-
-- (void)viewDidLayoutSubviews{
-    [super viewDidLayoutSubviews];
+- (void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    [[self p_controllerAtIndex:self.currentPageIndex]
+     endAppearanceTransition];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -86,7 +77,7 @@
     [self clearMemory];
     [self.scrollView setIterm:self.dataSource];
     [self showPageAtIndex:self.currentPageIndex animated:YES];
-
+    [self.delegate willChangeInit];
     //滚动到指定索引
     if ([self.delegate respondsToSelector:@selector(changeToSubController:)]) {
         [self.delegate changeToSubController:[self p_controllerAtIndex:self.currentPageIndex]];
@@ -144,8 +135,9 @@
         }
         
         BOOL isNotNeedChangeContentOffset = scrollView.contentSize.height < kScreenHeight - KTopHeight  &&  fabs ([self.lastContentSizeDict[@(index)] floatValue] -scrollView.contentSize.height) > 1.0;
-        
-        if (isNotNeedChangeContentOffset) {
+       
+        if (isNotNeedChangeContentOffset || [self.dataSource getCannotScrollWithPageOffset]) {
+            
             if (self.lastContentOffsetDict[@(index)] &&  fabs ([self.lastContentOffsetDict[@(index)] floatValue] -scrollView.contentOffset.y) >0.1) {
                 scrollView.contentOffset = CGPointMake(0, [self.lastContentOffsetDict[@(index)] floatValue]);
             }
@@ -163,36 +155,33 @@
     if (scrollView == self.scrollView && scrollView.isDragging) {
         NSInteger maxCount = [self.dataSource numberOfControllers];
         CGFloat offset = scrollView.contentOffset.x;
-        CGFloat width = scrollView.width;
         NSInteger lastSelectIndex = self.currentPageIndex;
-        
-        if (self.originalOffset < offset) {
-            self.guessToIndex = MIN(maxCount, ceil(offset/width));
-        }else if (self.originalOffset >= offset){
-            self.guessToIndex = MAX(0, floor(offset/width));
-        }
-        
+        NSInteger guessToIndex = MIN(maxCount, MAX(0, round(offset/scrollView.width)));
+       
         if ([self p_isPreLoad]) {
             //预加载
-            if (lastSelectIndex != self.guessToIndex){
+            if (lastSelectIndex != guessToIndex){
+                [self.delegate willChangeInit];
+                UIViewController<CXLSubPageControllerDataSource> * fromVC = [self p_controllerAtIndex:lastSelectIndex];
+                UIViewController<CXLSubPageControllerDataSource> *toVC = [self p_controllerAtIndex:guessToIndex];
+                [fromVC beginAppearanceTransition:NO animated:YES];
+                [toVC beginAppearanceTransition:YES animated:YES];
                 
-                //NSLog(@"%ld-----%ld",self.currentPageIndex,self.guessToIndex);
-                UIViewController *fromVC = [self p_controllerAtIndex:self.currentPageIndex];
-                UIViewController *toVC = [self p_controllerAtIndex:self.guessToIndex];
-                
-                if ([self.delegate respondsToSelector:@selector(changeToSubController:)]) {
-                    [self.delegate changeToSubController:toVC];
+                [self.delegate changeToSubController:toVC];
+  
+                if (fabs(scrollView.contentOffset.x - guessToIndex *scrollView.width) < 10) {
+                    [fromVC endAppearanceTransition];
+                    [toVC endAppearanceTransition];
                 }
-
             }
         }else{
             //非预加载
-            if (self.guessToIndex != self.currentPageIndex &&
+            if (guessToIndex != lastSelectIndex &&
                 !self.scrollView.isDecelerating) {
-                if (lastSelectIndex != self.guessToIndex){
-                    if ([self.delegate respondsToSelector:@selector(changeToSubController:)]) {
-                        [self.delegate changeToSubController:[self p_controllerAtIndex:self.currentPageIndex]];
-                    }
+                if (lastSelectIndex != guessToIndex){
+                    
+                    [self.delegate willChangeInit];
+                    [self.delegate changeToSubController:[self p_controllerAtIndex:self.currentPageIndex]];
                 }
             }
         }
@@ -207,13 +196,6 @@
         if ([self.delegate respondsToSelector:@selector(scrollViewContentOffsetWithRatio: draging:)]) {
             [self.delegate scrollViewContentOffsetWithRatio:scrollView.contentOffset.x/scrollView.width draging:YES];
         }
-    }
-}
-
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
-    if (!scrollView.isDecelerating) {
-        self.originalOffset = scrollView.contentOffset.x;
-        self.guessToIndex = self.currentPageIndex;
     }
 }
 
@@ -250,7 +232,7 @@
 }
 
 /** 获取保存在字典中的当前索引的控制器*/
-- (UIViewController *)p_controllerAtIndex:(NSInteger)index{
+- (UIViewController<CXLSubPageControllerDataSource> *)p_controllerAtIndex:(NSInteger)index{
     if (![self.controllersDict objectForKey:@(index)]) {
         UIViewController *controller = [self.dataSource controllerAtIndex:index];
         if (controller) {
@@ -299,6 +281,7 @@
     if (self.currentPageIndex == index && !self.isFirst) {
         return;
     }
+    [self.delegate willChangeInit];
     self.lastSelectedIndex = self.currentPageIndex;
     self.currentPageIndex = index;
     [self p_scrollAnimation:animated];
@@ -308,18 +291,15 @@
 - (void)p_scrollAnimation:(BOOL)animated{
     UIViewController *lastController = [self p_controllerAtIndex:self.lastSelectedIndex];
     UIViewController *currentController = [self p_controllerAtIndex:self.currentPageIndex];
-
-    
-//    [lastController beginAppearanceTransition:NO animated:animated];
-//    [currentController beginAppearanceTransition:YES animated:NO];
+    [lastController beginAppearanceTransition:NO animated:animated];
+    [currentController beginAppearanceTransition:YES animated:NO];
 
     //设置ScrollView的contentOffSet
     [self.scrollView setContentOffset:[self.scrollView calculationOffsetAtIndex:self.currentPageIndex] animated:NO];
+    [self.delegate changeToSubController:currentController];
     
-    //[self.delegate changeToSubController:currentController];
-    
-//    [lastController endAppearanceTransition];
-//    [currentController endAppearanceTransition];
+    [lastController endAppearanceTransition];
+    [currentController endAppearanceTransition];
 }
 
 - (UIScreenEdgePanGestureRecognizer *)p_screenEdgePanGestureRecognizer{
@@ -338,32 +318,26 @@
 }
 
 - (void)p_updatePageViewAfterDragging:(UIScrollView *)scrollView{
-    NSInteger newIndex = [self.scrollView calculationIndexWithOffset:scrollView.contentOffset.x width:scrollView.width];
+    NSInteger currentIndex = (NSInteger)scrollView.contentOffset.x / scrollView.width;
     NSInteger oldIndex = self.currentPageIndex;
-    self.currentPageIndex = newIndex;
- 
-    if (newIndex != oldIndex) {
+    self.currentPageIndex = currentIndex;
+    if (currentIndex == oldIndex) {
         return;
     }
-//    UIViewController *oldController = [self p_controllerAtIndex:oldIndex];
-//    UIViewController *newController = [self p_controllerAtIndex:newIndex];
-//
-//    [newController beginAppearanceTransition:YES animated:YES];
-//    [oldController beginAppearanceTransition:NO animated:YES];
-//
-    self.originalOffset = scrollView.contentOffset.x;
-    self.guessToIndex = newIndex;
+    
+    UIViewController<CXLSubPageControllerDataSource> *lastController = [self p_controllerAtIndex:oldIndex];
+    UIViewController<CXLSubPageControllerDataSource> *currentController = [self p_controllerAtIndex:currentIndex];
+    if (![self.dataSource isPreLoad]) {
+        [lastController beginAppearanceTransition:NO animated:YES];
+        [currentController beginAppearanceTransition:YES animated:YES];
+    }
+    
     if ([self.delegate respondsToSelector:@selector(changeToSubController:)]) {
         [self.delegate changeToSubController:[self p_controllerAtIndex:self.currentPageIndex]];
     }
     
-//    if (![self.dataSource isPreLoad]) {
-//        [newController beginAppearanceTransition:YES animated:YES];
-//        [oldController beginAppearanceTransition:NO animated:YES];
-//    }
-//   
-//    [newController endAppearanceTransition];
-//    [oldController endAppearanceTransition];
+    [lastController endAppearanceTransition];
+    [currentController endAppearanceTransition];
 }
 
 #pragma mark - Public Menthod
