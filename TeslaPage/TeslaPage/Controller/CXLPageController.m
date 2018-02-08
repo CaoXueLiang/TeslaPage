@@ -152,15 +152,22 @@
 
 #pragma mark - UIScrollViewDelegate
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
-    if (scrollView == self.scrollView && scrollView.isDragging) {
+    
+    if (scrollView == self.scrollView && scrollView.dragging == YES) {
         NSInteger maxCount = [self.dataSource numberOfControllers];
         CGFloat offset = scrollView.contentOffset.x;
         NSInteger lastSelectIndex = self.currentPageIndex;
         NSInteger guessToIndex = MIN(maxCount, MAX(0, round(offset/scrollView.width)));
-       
+        CGFloat min = (lastSelectIndex - 0.5) *scrollView.width;
+        CGFloat max = (lastSelectIndex + 0.5) *scrollView.width;
+        NSString *minNum = [NSString stringWithFormat:@"%.0f",min];
+        NSString *maxNum = [NSString stringWithFormat:@"%.0f",max];
+        NSString *offSetNum = [NSString stringWithFormat:@"%.0f",offset];
+        
         if ([self p_isPreLoad]) {
             //预加载
-            if (lastSelectIndex != guessToIndex){
+            if (lastSelectIndex != guessToIndex && ([minNum isEqualToString:offSetNum] || [maxNum isEqualToString:offSetNum])){
+                
                 [self.delegate willChangeInit];
                 UIViewController<CXLSubPageControllerDataSource> * fromVC = [self p_controllerAtIndex:lastSelectIndex];
                 UIViewController<CXLSubPageControllerDataSource> *toVC = [self p_controllerAtIndex:guessToIndex];
@@ -168,21 +175,15 @@
                 [toVC beginAppearanceTransition:YES animated:YES];
                 
                 [self.delegate changeToSubController:toVC];
-  
-                if (fabs(scrollView.contentOffset.x - guessToIndex *scrollView.width) < 10) {
-                    [fromVC endAppearanceTransition];
-                    [toVC endAppearanceTransition];
-                }
             }
         }else{
             //非预加载
             if (guessToIndex != lastSelectIndex &&
                 !self.scrollView.isDecelerating) {
-                if (lastSelectIndex != guessToIndex){
-                    
+
                     [self.delegate willChangeInit];
                     [self.delegate changeToSubController:[self p_controllerAtIndex:self.currentPageIndex]];
-                }
+                
             }
         }
      }
