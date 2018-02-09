@@ -24,6 +24,10 @@
 @property (nonatomic,assign,readwrite) NSInteger currentPageIndex;
 /** 是否是第一次 */
 @property (nonatomic,assign) BOOL isFirst;
+/**开始拖拽的时候，记录偏移量*/
+@property (nonatomic,assign) CGFloat originalOffsetX;
+/**记录将要滚动到的索引*/
+@property (nonatomic,assign) NSInteger guessToIndex;
 @end
 
 @implementation CXLPageController
@@ -156,31 +160,32 @@
     if (scrollView == self.scrollView && scrollView.dragging == YES) {
         NSInteger maxCount = [self.dataSource numberOfControllers];
         CGFloat offset = scrollView.contentOffset.x;
-        NSInteger lastSelectIndex = self.currentPageIndex;
-        NSInteger guessToIndex = MIN(maxCount, MAX(0, round(offset/scrollView.width)));
-        CGFloat min = (lastSelectIndex - 0.5) *scrollView.width;
-        CGFloat max = (lastSelectIndex + 0.5) *scrollView.width;
-        NSString *minNum = [NSString stringWithFormat:@"%.0f",min];
-        NSString *maxNum = [NSString stringWithFormat:@"%.0f",max];
-        NSString *offSetNum = [NSString stringWithFormat:@"%.0f",offset];
+        NSInteger lastGuessIndex = self.guessToIndex;
+        
+        if (self.originalOffsetX < offset) {
+            self.guessToIndex = ceil(offset / scrollView.width);
+        }else if (self.originalOffsetX > offset){
+            self.guessToIndex = floor(offset / scrollView.width);
+        }
         
         if ([self p_isPreLoad]) {
             //预加载
-            if (lastSelectIndex != guessToIndex && ([minNum isEqualToString:offSetNum] || [maxNum isEqualToString:offSetNum])){
+            if (lastGuessIndex != self.guessToIndex && self.guessToIndex != self.currentPageIndex && self.guessToIndex >= 0 && self.guessToIndex < maxCount){
                 
                 [self.delegate willChangeInit];
-                UIViewController<CXLSubPageControllerDataSource> * fromVC = [self p_controllerAtIndex:lastSelectIndex];
-                UIViewController<CXLSubPageControllerDataSource> *toVC = [self p_controllerAtIndex:guessToIndex];
-                [fromVC beginAppearanceTransition:NO animated:YES];
+                UIViewController* fromVC = [self p_controllerAtIndex:self.currentPageIndex];
+                UIViewController *toVC = [self p_controllerAtIndex:self.guessToIndex];
                 [toVC beginAppearanceTransition:YES animated:YES];
+                [fromVC beginAppearanceTransition:NO animated:YES];
                 
                 [self.delegate changeToSubController:toVC];
+
             }
         }else{
             //非预加载
-            if (guessToIndex != lastSelectIndex &&
+            if (self.guessToIndex != self.currentPageIndex &&
                 !self.scrollView.isDecelerating) {
-
+                
                     [self.delegate willChangeInit];
                     [self.delegate changeToSubController:[self p_controllerAtIndex:self.currentPageIndex]];
                 
@@ -197,6 +202,13 @@
         if ([self.delegate respondsToSelector:@selector(scrollViewContentOffsetWithRatio: draging:)]) {
             [self.delegate scrollViewContentOffsetWithRatio:scrollView.contentOffset.x/scrollView.width draging:YES];
         }
+    }
+}
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+    if (!scrollView.isDecelerating) {
+        self.originalOffsetX = scrollView.contentOffset.x;
+        self.guessToIndex = self.currentPageIndex;
     }
 }
 
@@ -322,23 +334,25 @@
     NSInteger currentIndex = (NSInteger)scrollView.contentOffset.x / scrollView.width;
     NSInteger oldIndex = self.currentPageIndex;
     self.currentPageIndex = currentIndex;
-    if (currentIndex == oldIndex) {
-        return;
-    }
     
-    UIViewController<CXLSubPageControllerDataSource> *lastController = [self p_controllerAtIndex:oldIndex];
-    UIViewController<CXLSubPageControllerDataSource> *currentController = [self p_controllerAtIndex:currentIndex];
-    if (![self.dataSource isPreLoad]) {
-        [lastController beginAppearanceTransition:NO animated:YES];
-        [currentController beginAppearanceTransition:YES animated:YES];
+    if (currentIndex != oldIndex) {
+        UIViewController *oldController = [self p_controllerAtIndex:oldIndex];
+        UIViewController *newController = [self p_controllerAtIndex:currentIndex];
+        
+        if (![self.dataSource isPreLoad]) {
+            [oldController beginAppearanceTransition:NO animated:YES];
+            [newController beginAppearanceTransition:YES animated:YES];
+        }
+        [oldController endAppearanceTransition];
+        [newController endAppearanceTransition];
     }
-    
+
+    self.originalOffsetX = scrollView.contentOffset.x;
+    self.guessToIndex = self.currentPageIndex;
+
     if ([self.delegate respondsToSelector:@selector(changeToSubController:)]) {
         [self.delegate changeToSubController:[self p_controllerAtIndex:self.currentPageIndex]];
     }
-    
-    [lastController endAppearanceTransition];
-    [currentController endAppearanceTransition];
 }
 
 #pragma mark - Public Menthod
@@ -361,10 +375,6 @@
 - (NSMutableDictionary *)controllersDict{
     if (!_controllersDict) {
         _controllersDict = [[NSMutableDictionary alloc]init];
-//        for (int i = 0; i < [self.dataSource numberOfControllers]; i++) {
-//            UIViewController *controller = [self p_controllerAtIndex:i];
-//            [_controllersDict setObject:controller forKey:@(i)];
-//        }
     }
     return _controllersDict;
 }

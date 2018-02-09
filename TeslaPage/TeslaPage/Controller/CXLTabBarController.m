@@ -148,8 +148,6 @@ static const CGFloat KTarBarHeight = 50;
         CGFloat pageTop = [self pageContentInsetTopAtIndex:newIndex];
         CGFloat top = [self p_tabBarTopWithContentOffset:[toVCTemp preferScrollView].contentOffset.y + pageTop];
 
-       // NSLog(@"%@",NSStringFromCGRect(self.tarBar.frame));
-
         //如果高度相同，不去修改offSet
         if (fabs(top - self.tarBar.frame.origin.y) > 0.1) {
             CGFloat scrollOffSet = [self preferTarBarOriginalY] - self.tarBar.top - [self pageContentInsetTopAtIndex:newIndex];

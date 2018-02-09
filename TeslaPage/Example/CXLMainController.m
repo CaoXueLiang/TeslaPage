@@ -8,9 +8,13 @@
 
 #import "CXLMainController.h"
 #import "CXLSubListController.h"
+#import "WeiBoHeaderView.h"
+#import "WeiBoCustomNavigationView.h"
 
 @interface CXLMainController ()
-
+@property (nonatomic,assign) UIStatusBarStyle barStyle;
+@property (nonatomic,strong) WeiBoHeaderView *headerView;
+@property (nonatomic,strong) WeiBoCustomNavigationView *navigationView;
 @end
 
 static  CGFloat const KCoverHeight = 280;
@@ -21,15 +25,18 @@ static  CGFloat const KCoverHeight = 280;
     self.navigationItem.title = @"首页";
     self.navigationController.navigationBar.barTintColor = [UIColor redColor];
     self.automaticallyAdjustsScrollViewInsets = NO;
+    [self.navigationController setNavigationBarHidden:YES];
     [self reloadData];
+    [self.view addSubview:self.navigationView];
 }
 
-- (void)viewDidAppear:(BOOL)animated{
-    [super viewDidAppear:animated];
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return self.barStyle;
 }
 
+#pragma mark - DataSource
 - (NSInteger)numberOfControllers{
-    return 6;
+    return self.itermsArray.count;
 }
 
 - (UIViewController *)controllerAtIndex:(NSInteger)index{
@@ -39,13 +46,9 @@ static  CGFloat const KCoverHeight = 280;
     if (index == 0) {
         coverController.view.backgroundColor = [UIColor greenColor];
     } else if (index == 1) {
-        coverController.view.backgroundColor = [UIColor blueColor];
+        coverController.view.backgroundColor = [UIColor yellowColor];
     } else if (index == 2){
         coverController.view.backgroundColor = [UIColor purpleColor];
-    }else if (index == 3){
-        coverController.view.backgroundColor = [UIColor yellowColor];
-    }else{
-        coverController.view.backgroundColor = [UIColor whiteColor];
     }
     return coverController;
 }
@@ -59,13 +62,7 @@ static  CGFloat const KCoverHeight = 280;
 }
 
 - (UIView *)preferCoverView{
-    UIImageView *view = [[UIImageView alloc] initWithFrame:[self preferCoverFrame]];
-    view.image = [UIImage imageNamed:@"top"];
-    view.contentMode = UIViewContentModeScaleAspectFill;
-    view.clipsToBounds = YES;
-    //取消交互，才能使View跟随ScrollView
-    view.userInteractionEnabled = NO;
-    return view;
+    return self.headerView;
 }
 
 - (CGFloat)preferTarBarOriginalY{
@@ -77,7 +74,46 @@ static  CGFloat const KCoverHeight = 280;
 }
 
 - (NSArray *)itermsArray{
-    return @[@"第一页",@"第二页",@"第三页",@"第四页",@"第五页",@"第六页",];
+    return @[@"主页",@"微博",@"相册"];
+}
+
+- (void)scrollWithPageOffset:(CGFloat)realOffset index:(NSInteger)index{
+    [super scrollWithPageOffset:realOffset index:index];
+    [self.navigationView setAttributesWithOffSet:realOffset + KCoverHeight + 50];
+    
+    CGFloat ratio = MIN(MAX(0, realOffset + KCoverHeight + 50 / (250 - 2 *KTopHeight)), 1);
+    if (ratio < 0.5) {
+        self.barStyle = UIStatusBarStyleLightContent;
+    }else{
+        self.barStyle = UIStatusBarStyleDefault;
+    }
+    
+    //更新状态栏颜色
+    [self setNeedsStatusBarAppearanceUpdate];
+}
+
+#pragma mark - Setter && Getter
+- (WeiBoHeaderView *)headerView{
+    if (!_headerView) {
+        _headerView = [[WeiBoHeaderView alloc]initWithFrame:[self preferCoverFrame]];
+        //取消交互，才能使View跟随ScrollView
+        _headerView.userInteractionEnabled = NO;
+    }
+    return _headerView;
+}
+
+- (WeiBoCustomNavigationView *)navigationView{
+    if (!_navigationView) {
+        @weakify(self);
+        _navigationView = [WeiBoCustomNavigationView new];
+        _navigationView.backBlock = ^{
+            [weak_self.navigationController popViewControllerAnimated:YES];
+        };
+        _navigationView.moreBlock = ^{
+            NSLog(@"点击了more按钮");
+        };
+    }
+    return _navigationView;
 }
 
 @end
