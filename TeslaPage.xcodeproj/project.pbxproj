@@ -15,6 +15,9 @@
 		5870B5B52022F4C0001F07CD /* CXLMainController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5870B5B42022F4C0001F07CD /* CXLMainController.m */; };
 		5870B5BD2022F8C6001F07CD /* CXLTarItermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5870B5BC2022F8C6001F07CD /* CXLTarItermView.m */; };
 		5870B5C020230126001F07CD /* CXLTarBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 5870B5BF20230126001F07CD /* CXLTarBar.m */; };
+		58D9C667202DA656000AF870 /* WeiBoCustomNavigationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58D9C666202DA640000AF870 /* WeiBoCustomNavigationView.m */; };
+		58D9C668202DA65C000AF870 /* WeiBoHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58D9C663202DA640000AF870 /* WeiBoHeaderView.m */; };
+		58D9C66B202DA6C3000AF870 /* UIButton+Aliment.m in Sources */ = {isa = PBXBuildFile; fileRef = 58D9C669202DA6C3000AF870 /* UIButton+Aliment.m */; };
 		B960A41FEC0FB96126EEEC9C /* libPods-TeslaPage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2474B4DD1C91DDA333054334 /* libPods-TeslaPage.a */; };
 		C301C4312024B38A00F3415A /* CXLPageContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = C301C4302024B38A00F3415A /* CXLPageContentView.m */; };
 		C301C4342025A5CC00F3415A /* CXLTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = C301C4332025A5CC00F3415A /* CXLTabBarController.m */; };
@@ -41,6 +44,12 @@
 		5870B5BC2022F8C6001F07CD /* CXLTarItermView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CXLTarItermView.m; sourceTree = "<group>"; };
 		5870B5BE20230126001F07CD /* CXLTarBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXLTarBar.h; sourceTree = "<group>"; };
 		5870B5BF20230126001F07CD /* CXLTarBar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CXLTarBar.m; sourceTree = "<group>"; };
+		58D9C663202DA640000AF870 /* WeiBoHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WeiBoHeaderView.m; sourceTree = "<group>"; };
+		58D9C664202DA640000AF870 /* WeiBoCustomNavigationView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WeiBoCustomNavigationView.h; sourceTree = "<group>"; };
+		58D9C665202DA640000AF870 /* WeiBoHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WeiBoHeaderView.h; sourceTree = "<group>"; };
+		58D9C666202DA640000AF870 /* WeiBoCustomNavigationView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WeiBoCustomNavigationView.m; sourceTree = "<group>"; };
+		58D9C669202DA6C3000AF870 /* UIButton+Aliment.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIButton+Aliment.m"; sourceTree = "<group>"; };
+		58D9C66A202DA6C3000AF870 /* UIButton+Aliment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIButton+Aliment.h"; sourceTree = "<group>"; };
 		C301C4292024A8F200F3415A /* CXLPageProtocols.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXLPageProtocols.h; sourceTree = "<group>"; };
 		C301C42C2024B02900F3415A /* CXLCoverProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXLCoverProtocol.h; sourceTree = "<group>"; };
 		C301C42F2024B38A00F3415A /* CXLPageContentView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXLPageContentView.h; sourceTree = "<group>"; };
@@ -135,6 +144,7 @@
 		5870B5B22022F49D001F07CD /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				58D9C662202DA634000AF870 /* View */,
 				5870B5B32022F4C0001F07CD /* CXLMainController.h */,
 				5870B5B42022F4C0001F07CD /* CXLMainController.m */,
 				C301C4392026EF8000F3415A /* CXLSubListController.h */,
@@ -161,6 +171,19 @@
 				5870B5BF20230126001F07CD /* CXLTarBar.m */,
 				C301C42F2024B38A00F3415A /* CXLPageContentView.h */,
 				C301C4302024B38A00F3415A /* CXLPageContentView.m */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		58D9C662202DA634000AF870 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				58D9C66A202DA6C3000AF870 /* UIButton+Aliment.h */,
+				58D9C669202DA6C3000AF870 /* UIButton+Aliment.m */,
+				58D9C664202DA640000AF870 /* WeiBoCustomNavigationView.h */,
+				58D9C666202DA640000AF870 /* WeiBoCustomNavigationView.m */,
+				58D9C665202DA640000AF870 /* WeiBoHeaderView.h */,
+				58D9C663202DA640000AF870 /* WeiBoHeaderView.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -272,7 +295,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		7DC0E1A9629005F916B3CC49 /* [CP] Copy Pods Resources */ = {
@@ -297,11 +320,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				58D9C668202DA65C000AF870 /* WeiBoHeaderView.m in Sources */,
+				58D9C667202DA656000AF870 /* WeiBoCustomNavigationView.m in Sources */,
 				C301C4382025AE3200F3415A /* CXLCoverController.m in Sources */,
 				C301C4312024B38A00F3415A /* CXLPageContentView.m in Sources */,
 				5870B58F2022F42F001F07CD /* main.m in Sources */,
 				580CE492202326A3000E70BF /* CXLPageController.m in Sources */,
 				5870B5BD2022F8C6001F07CD /* CXLTarItermView.m in Sources */,
+				58D9C66B202DA6C3000AF870 /* UIButton+Aliment.m in Sources */,
 				5870B5C020230126001F07CD /* CXLTarBar.m in Sources */,
 				C301C43B2026EF8000F3415A /* CXLSubListController.m in Sources */,
 				5870B5812022F42F001F07CD /* AppDelegate.m in Sources */,

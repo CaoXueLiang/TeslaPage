@@ -10,6 +10,7 @@
 #define PrefixHeader_pch
 
 #import <YYCategories/YYCategories.h>
+#import <Masonry/Masonry.h>
 
 /*适配iPhoneX需要用到的宏定义*/
 #define kDevice_Is_iPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
